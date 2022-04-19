@@ -20,6 +20,14 @@ def adjust_students_data(data_input):
     return data[columns_to_use]
 
 
+def adjust_games_data(data_input):
+    data = data_input.dropna()
+    columns_to_use = ['Platform', 'Year', 'Genre', 'NA_Sales', 'EU_Sales',
+                      'JP_Sales', 'Other_Sales', 'Global_Sales']
+
+    return data
+
+
 def mahalanobis_metric(x, y, cov):
     if not type(x).__module__ == np.__name__:
         x = np.array(x)

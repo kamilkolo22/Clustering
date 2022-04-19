@@ -3,7 +3,15 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 import os
 from DataPreprocessing import *
-
+import numpy as np
+from matplotlib import pyplot as plt
+# redukcja wymiarów zbioru - na potrzeby wizualizacji grup
+from sklearn.decomposition import PCA
+# skalowanie zmiennych - wskazane przy metodach korzystających z miar odległości
+from sklearn.preprocessing import StandardScaler
+# biblioteki do grupowania hierarchicznego: sklearn i scipy
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
 if __name__ == "__main__":
     # os.chdir(os.path.dirname(__file__))
@@ -21,11 +29,11 @@ if __name__ == "__main__":
                              list(adjusted_data.loc[2, :]),
                              corrMatrix))
 
-    # print(data2)
+    # pd.set_option('display.expand_frame_repr', False)
+    # print(data2.head())
     # print(data2.columns)
     # print(set(data2['Publisher']))
     # print(set(data2['Genre']))
-
-    # map_race = {'group B': 1, 'group C': 2, 'group E': 3, 'group D': 4, 'group A': 5}
-    # data1['race/ethnicity'] = data1['race/ethnicity'].map(map_race)
-    # print(data1.head())
+    # print(set(data2['Platform']))
+    # print(data2[['Rank', 'Publisher']].groupby('Publisher').count().sort_values(by=['Rank']))
+    # print(data2.describe())
