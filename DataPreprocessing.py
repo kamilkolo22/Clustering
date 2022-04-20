@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def adjust_students_data(data_input):
     data = data_input.dropna()
     columns_to_use = ['gender', 'group A', 'group B', 'group C', 'group D', 'degree', 'lunch', 'course',
@@ -27,12 +24,3 @@ def adjust_games_data(data_input):
 
     return data
 
-
-def mahalanobis_metric(x, y, cov):
-    if not type(x).__module__ == np.__name__:
-        x = np.array(x)
-    if not type(y).__module__ == np.__name__:
-        y = np.array(y)
-    inv_cov = np.linalg.inv(cov)
-    vec = x - y
-    return np.sqrt(vec.T @ inv_cov @ vec)
