@@ -11,10 +11,15 @@ from sklearn import datasets
 if __name__ == "__main__":
     # os.chdir(os.path.dirname(__file__))
     data1 = pd.read_csv('input/StudentsPerformanceMuricanUniversity.csv', na_values='no data')
-    # data2 = pd.read_csv('input/VideoGamesSales.csv')
+    data2 = pd.read_csv('input/VideoGamesSales.csv')
+
+    data2 = adjust_games_data(data2)
 
     adjusted_data = adjust_students_data(data1)
-    print(linkage(adjusted_data))
+    print(adjusted_data.head())
+    # print(linkage(adjusted_data))
+    corrMatrix = adjusted_data.corr()
+    # print(get_dist_matrix(adjusted_data, corrMatrix))
 
     # corrMatrix = adjusted_data.corr()
     # sn.heatmap(corrMatrix, annot=True)
@@ -43,8 +48,12 @@ if __name__ == "__main__":
     # pd.set_option('display.expand_frame_repr', False)
     # print(data2.head())
     # print(data2.columns)
-    # print(set(data2['Publisher']))
-    # print(set(data2['Genre']))
-    # print(set(data2['Platform']))
+    print(set(data2['Publisher']))
+    print(set(data2['Genre']))
+    l = list(set(data2['Platform']))
+    l.sort()
+    print(l)
+    print(set(data2['Year']))
+    print(data2['Zelda' in data2['Name']])
     # print(data2[['Rank', 'Publisher']].groupby('Publisher').count().sort_values(by=['Rank']))
     # print(data2.describe())

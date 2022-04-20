@@ -18,6 +18,18 @@ def linkage(data):
     return spanning_tree
 
 
+def get_dist_matrix(data, *args):
+    n = len(data)
+    dist_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                continue
+            dist_matrix[i][j] = mahalanobis_metric(data.iloc[i], data.iloc[j], args[0])
+
+    return dist_matrix
+
+
 def find_closest(x, data, *args):
     """Find closest point and return distance and vector index"""
     ## TODO check if funcktion returns row index name or index number
