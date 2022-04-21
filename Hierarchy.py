@@ -1,32 +1,40 @@
 import numpy as np
 import pandas as pd
 from copy import deepcopy
+from sklearn.metrics import pairwise_distances
+from scipy.spatial import distance_matrix
+from scipy.sparse.csgraph import minimum_spanning_tree
 
 
 def linkage(data):
     corr_matrix = data.corr()
-    spanning_tree = {0: (0, 0)}
-    data_cut = deepcopy(data)
-    x_ind = 0
+    dist_matrix = get_dist_matrix(data, corr_matrix)
 
-    for _ in range(len(data) - 1):
-        x_row = data_cut.loc[x_ind]
-        data_cut = data_cut.drop(x_ind)
-        spanning_tree[x_ind] = find_closest(x_row, data_cut, corr_matrix)
-        x_ind = spanning_tree[x_ind][0]
+    # spanning_tree = {0: (0, 0)}
+    # data_cut = deepcopy(data)
+    # x_ind = 0
+    #
+    # for _ in range(len(data) - 1):
+    #     x_row = data_cut.loc[x_ind]
+    #     data_cut = data_cut.drop(x_ind)
+    #     spanning_tree[x_ind] = find_closest(x_row, data_cut, corr_matrix)
+    #     x_ind = spanning_tree[x_ind][0]
 
-    return spanning_tree
+    return minimum_spanning_tree(dist_matrix)
 
 
 def get_dist_matrix(data, *args):
-    n = len(data)
-    dist_matrix = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                continue
-            dist_matrix[i][j] = mahalanobis_metric(data.iloc[i], data.iloc[j], args[0])
+    ## TODO implement mahalanobis metric
+    # n = len(data)
+    # dist_matrix = np.zeros((n, n))
+    # for i in range(n):
+    #     for j in range(n):
+    #         if i == j:
+    #             continue
+    #         dist_matrix[i][j] = mahalanobis_metric(data.iloc[i], data.iloc[j], args[0])
 
+    dist_matrix = pd.DataFrame(distance_matrix(data.values, data.values),
+                               index=data.index, columns=data.index)
     return dist_matrix
 
 

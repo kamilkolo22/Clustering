@@ -18,9 +18,34 @@ def adjust_students_data(data_input):
 
 
 def adjust_games_data(data_input):
+    # Set parameters
+    min_year = 2006
+    big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
+                     'Take-Two Interactive', 'Sony Computer Entertainment',
+                     'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
+    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales',
+                      'Other_Sales', 'Global_Sales']
+
+    # Filter data
     data = data_input.dropna()
-    columns_to_use = ['Platform', 'Year', 'Genre', 'NA_Sales', 'EU_Sales',
-                      'JP_Sales', 'Other_Sales', 'Global_Sales']
+    data = data[data['Year'] >= min_year]
 
-    return data
+    # Adjust Publisher column
+    data.loc[~data["Publisher"].isin(big_publisher), "Publisher"] = "Other"
+    for publisher in big_publisher:
+        data[publisher] = data.apply(
+            lambda row: 1 if row['Publisher'] == publisher else 0, axis=1)
 
+    # Adjust Platform Column
+    platforms = set(data['Platform']) - {'3DS'}
+    for platform in platforms:
+        data[platform] = data.apply(
+            lambda row: 1 if row['Platform'] == platform else 0, axis=1)
+
+    # Adjust Platform Column
+    genres = set(data['Genre']) - {'Puzzle'}
+    for genre in genres:
+        data[genre] = data.apply(
+            lambda row: 1 if row['Genre'] == genre else 0, axis=1)
+
+    return data[columns_to_use + big_publisher + list(genres) + list(platforms)]
