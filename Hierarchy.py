@@ -4,52 +4,42 @@ from copy import deepcopy
 from sklearn.metrics import pairwise_distances
 from scipy.spatial import distance_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
+from ToolBox import *
+
+
+def find_cluster(data, number):
+    spanning_tree = linkage(data)
+    # Get longest edges in graph
+    indexes = largest_indices(spanning_tree, number)
+    # Delete longest edges by setting zeros in spanning tree matrix
+    spanning_tree[indexes] = 0
+
+    graph = matrix_to_graph(range(len(spanning_tree)),
+                            spanning_tree)
+    # Find connected components
+    comp = connected_componentsBFS(graph)
+    return comp[1:]
 
 
 def linkage(data):
     corr_matrix = data.corr()
     dist_matrix = get_dist_matrix(data, corr_matrix)
 
-    # spanning_tree = {0: (0, 0)}
-    # data_cut = deepcopy(data)
-    # x_ind = 0
-    #
-    # for _ in range(len(data) - 1):
-    #     x_row = data_cut.loc[x_ind]
-    #     data_cut = data_cut.drop(x_ind)
-    #     spanning_tree[x_ind] = find_closest(x_row, data_cut, corr_matrix)
-    #     x_ind = spanning_tree[x_ind][0]
+    # Minimal spanning tree from distance matrix by function from scipy package
+    spanning_tree = minimum_spanning_tree(dist_matrix).toarray()
 
-    return minimum_spanning_tree(dist_matrix)
+    return spanning_tree
 
 
 def get_dist_matrix(data, *args):
-    ## TODO implement mahalanobis metric
-    # n = len(data)
-    # dist_matrix = np.zeros((n, n))
-    # for i in range(n):
-    #     for j in range(n):
-    #         if i == j:
-    #             continue
-    #         dist_matrix[i][j] = mahalanobis_metric(data.iloc[i], data.iloc[j], args[0])
+    n = len(data)
+    dist_matrix = np.zeros((n, n))
+    for i in range(n):
+        for j in range(i, n):
+            dist_matrix[i][j] = mahalanobis_metric(data.iloc[i], data.iloc[j],
+                                                   args[0])
 
-    dist_matrix = pd.DataFrame(distance_matrix(data.values, data.values),
-                               index=data.index, columns=data.index)
     return dist_matrix
-
-
-def find_closest(x, data, *args):
-    """Find closest point and return distance and vector index"""
-    ## TODO check if funcktion returns row index name or index number
-    dist_min = np.inf
-    index_min = -1
-    for index, row in data.iterrows():
-        temp = mahalanobis_metric(x, row, args[0])
-        if temp < dist_min:
-            dist_min = temp
-            index_min = index
-
-    return index_min, dist_min
 
 
 def mahalanobis_metric(x, y, cov):

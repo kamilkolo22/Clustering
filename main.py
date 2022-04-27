@@ -13,14 +13,19 @@ if __name__ == "__main__":
     # pd.set_option('display.expand_frame_repr', False)
 
     data1 = pd.read_csv('input/StudentsPerformanceMuricanUniversity.csv', na_values='no data')
-    # data2 = pd.read_csv('input/VideoGamesSales.csv')
-
     adjusted_data = adjust_students_data(data1)
-    # print(adjusted_data.head())
-    # print(adjusted_data.dtypes)
-    #
-    # print(linkage(adjusted_data.iloc[0:100]))
+    clusters = find_cluster(adjusted_data, 4)
 
+    dfClusters = []
+    for cluster in clusters:
+        dfClusters.append(adjusted_data.iloc[list(cluster)])
+
+    print(dfClusters[0])
+    print(dfClusters[1])
+    print(dfClusters[2])
+    print(dfClusters[3])
+
+    # data2 = pd.read_csv('input/VideoGamesSales.csv')
     # corrMatrix = adjusted_data.corr()
     # print(get_dist_matrix(adjusted_data, corrMatrix))
 
@@ -28,10 +33,10 @@ if __name__ == "__main__":
     # sn.heatmap(corrMatrix, annot=True)
     # plt.show()
 
-    import scipy.cluster.hierarchy as hier
-
-    Z = hier.linkage(adjusted_data, method='complete', metric='mahalanobis')
-    print(Z)
+    # import scipy.cluster.hierarchy as hier
+    #
+    # Z = hier.linkage(adjusted_data, method='complete', metric='mahalanobis')
+    # print(Z)
     # plt.figure(figsize=(25, 10))
     # plt.title('Dendrogram')
     # plt.xlabel('sample index')
