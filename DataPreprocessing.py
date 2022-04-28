@@ -1,7 +1,9 @@
-def adjust_students_data(data_input):
-    data = data_input.dropna()
-    data = data.reset_index(drop=True)
+import pandas as pd
+from copy import deepcopy
 
+def adjust_students_data(data_input):
+    """Prepare data, get dummies for qualitative data and normalize values"""
+    data = deepcopy(data_input)
     columns_to_use = ['gender', 'group A', 'group B', 'group C', 'group D',
                       'degree', 'lunch', 'course', 'AvgScore']
     degree_map = {"bachelor's degree": 3/5, 'some high school': 0,
@@ -25,9 +27,13 @@ def adjust_students_data(data_input):
     data['degree'] = data['parental level of education'].map(degree_map)
     data['AvgScore'] = data.apply(lambda row: (row['math score'] +
                                                row['reading score'] +
-                                               row['writing score']) / 300,
+                                               row['writing score']) / 3,
                                   axis=1)
-
+    max_v = max(data['AvgScore'])
+    min_v = min(data['AvgScore'])
+    data['AvgScore'] = data.apply(lambda row: (row['AvgScore'] - min_v) /
+                                              (max_v - min_v),
+                                  axis=1)
     return data[columns_to_use]
 
 
@@ -64,3 +70,11 @@ def adjust_games_data(data_input):
             lambda row: 1 if row['Genre'] == genre else 0, axis=1)
 
     return data[columns_to_use + big_publisher + list(genres) + list(platforms)]
+
+
+def read_data(path):
+    """Read data from file path and drop na values"""
+    data = pd.read_csv(path, na_values='no data')
+    data = data.dropna()
+    data = data.reset_index(drop=True)
+    return data

@@ -1,29 +1,23 @@
-import pandas as pd
-import numpy as np
-import seaborn as sn
-import matplotlib.pyplot as plt
-import os
 from DataPreprocessing import *
 from Hierarchy import *
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn import datasets
+from Visualisation import *
+
 
 if __name__ == "__main__":
     # os.chdir(os.path.dirname(__file__))
     # pd.set_option('display.expand_frame_repr', False)
 
-    data1 = pd.read_csv('input/StudentsPerformanceMuricanUniversity.csv', na_values='no data')
-    adjusted_data = adjust_students_data(data1)
-    clusters = find_cluster(adjusted_data, 4)
+    data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv')
+    adjusted_data = adjust_students_data(data_raw)
+    clusters = find_cluster(adjusted_data)
 
     dfClusters = []
     for cluster in clusters:
-        dfClusters.append(adjusted_data.iloc[list(cluster)])
+        dfClusters.append(data_raw.iloc[list(cluster)])
 
-    print(dfClusters[0])
-    print(dfClusters[1])
-    print(dfClusters[2])
-    print(dfClusters[3])
+    dfClusters = arrange_clusters(dfClusters)
+
+    plot_compare_clusters(dfClusters)
 
     # data2 = pd.read_csv('input/VideoGamesSales.csv')
     # corrMatrix = adjusted_data.corr()

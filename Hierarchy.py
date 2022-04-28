@@ -1,37 +1,52 @@
-import numpy as np
-import pandas as pd
-from copy import deepcopy
-from sklearn.metrics import pairwise_distances
-from scipy.spatial import distance_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
 from ToolBox import *
 
 
-def find_cluster(data, number):
-    spanning_tree = linkage(data)
-    # Get longest edges in graph
-    indexes = largest_indices(spanning_tree, number)
-    # Delete longest edges by setting zeros in spanning tree matrix
-    spanning_tree[indexes] = 0
+def arrange_clusters(df_clusters):
+    """Order list of clusters by average score in math test"""
+    avg_score = np.array([])
+    for cluster in df_clusters:
+        avg_score = np.append(avg_score, cluster['math score'].mean())
+    df_clusters = [df_clusters[i] for i in avg_score.argsort()]
 
-    graph = matrix_to_graph(range(len(spanning_tree)),
-                            spanning_tree)
+    return df_clusters
+
+
+def find_cluster(data):
+    """Return clusters as a list of row indexes for each cluster. User has to
+    set number of clusters manually"""
+    span_tree_matrix = linkage(data)
+    # Get longest edges in graph
+    indexes = largest_indices(span_tree_matrix, 10)
+
+    print(f'Longest distance between elements: {span_tree_matrix[indexes]}')
+    number = int(input('Chose number of clusters (int): '))
+    new = (indexes[0][:number-1], indexes[1][:number-1])
+
+    # Delete longest edges by setting zeros in spanning tree matrix
+    span_tree_matrix[new] = 0
+
+    graph = matrix_to_graph(range(len(span_tree_matrix)),
+                            span_tree_matrix)
     # Find connected components
     comp = connected_componentsBFS(graph)
     return comp[1:]
 
 
 def linkage(data):
+    """Calculate minimal spanning tree and return
+    distance matrix of this tree"""
     corr_matrix = data.corr()
     dist_matrix = get_dist_matrix(data, corr_matrix)
 
     # Minimal spanning tree from distance matrix by function from scipy package
-    spanning_tree = minimum_spanning_tree(dist_matrix).toarray()
+    span_tree_matrix = minimum_spanning_tree(dist_matrix).toarray()
 
-    return spanning_tree
+    return span_tree_matrix
 
 
 def get_dist_matrix(data, *args):
+    """Prepare distance matrix for given data using mahalanobis metric"""
     n = len(data)
     dist_matrix = np.zeros((n, n))
     for i in range(n):
