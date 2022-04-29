@@ -1,54 +1,46 @@
 from DataPreprocessing import *
 from Hierarchy import *
 from Visualisation import *
+import seaborn as sns
 
 
 if __name__ == "__main__":
-    # os.chdir(os.path.dirname(__file__))
-    # pd.set_option('display.expand_frame_repr', False)
+    pd.set_option('display.expand_frame_repr', False)
 
-    data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv')
-    adjusted_data = adjust_students_data(data_raw)
-    clusters = find_cluster(adjusted_data)
-
-    dfClusters = []
-    for cluster in clusters:
-        dfClusters.append(data_raw.iloc[list(cluster)])
-
-    dfClusters = arrange_clusters(dfClusters)
-
-    plot_compare_clusters(dfClusters)
-
-    # data2 = pd.read_csv('input/VideoGamesSales.csv')
-    # corrMatrix = adjusted_data.corr()
-    # print(get_dist_matrix(adjusted_data, corrMatrix))
-
-    # corrMatrix = adjusted_data.corr()
-    # sn.heatmap(corrMatrix, annot=True)
-    # plt.show()
-
-    # import scipy.cluster.hierarchy as hier
+    # data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv',
+    #                      'school')
+    # adjusted_data = adjust_students_data(data_raw)
+    # clusters = find_cluster(adjusted_data)
     #
-    # Z = hier.linkage(adjusted_data, method='complete', metric='mahalanobis')
-    # print(Z)
-    # plt.figure(figsize=(25, 10))
-    # plt.title('Dendrogram')
-    # plt.xlabel('sample index')
-    # plt.ylabel('distance')
-    # hier.dendrogram(
-    #     Z,  # Macierz linkage
-    #     leaf_rotation=90.,  # Zachęcam do pokombinowania z tym ;)
-    #     leaf_font_size=15.,  # Rozmiar czcionki na osi X
-    #     truncate_mode='level',  # A co by było, gdyby nie ucinać dendrogramu?
-    #     p=5  # Poziom rozgałęzienia
-    # )
-    # max_d = 3.5
-    # plt.axhline(y=max_d,
-    #             c='k')  # Dorysowanie czarnej poziomej linii na wysokości max_d
+    # dfClusters = []
+    # for cluster in clusters:
+    #     dfClusters.append(data_raw.iloc[list(cluster)])
+    #
+    # dfClusters = arrange_clusters(dfClusters)
+    #
+    # plot_compare_clusters(dfClusters)
+
+    data_raw = read_data('input/VideoGamesSales.csv', 'games')
+    # adjusted_data = adjust_games_data(data_raw)
+    # data_plot = adjust_to_plot(data_raw)
+    # plot_games_sales(data_plot)
+
+    print(data_raw)
+
+    data = data_raw[['Platform', 'Genre', 'Publisher', 'NA_Sales',
+                    'EU_Sales',  'JP_Sales', 'Other_Sales']]
+    data = data.groupby(by=['Platform', 'Genre', 'Publisher'])
+    sales_pred = data.describe()
+    print(sales_pred)
+
+    print(sales_pred.loc[('PC', 'Action', 'Electronic Arts'), :][(slice(None), 'mean')])
+
+    sales_pred.to_excel('output/games_stats.xlsx')
+
+    # sns.catplot(x='Region', y='Sales', data=data_plot,
+    #             kind='box', row='Genre',
+    #             col='Publisher')
     # plt.show()
 
-    # print(data2.head())
-    # print(data2.columns)
-    # print(set(data2['Platform']))
-    # print(set(data2['Genre']))
-    # print(set(data2['Publisher']))
+    # sns.heatmap(corrMatrix, annot=True)
+    # plt.show()

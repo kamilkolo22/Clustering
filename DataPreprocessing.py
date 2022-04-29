@@ -1,6 +1,7 @@
 import pandas as pd
 from copy import deepcopy
 
+
 def adjust_students_data(data_input):
     """Prepare data, get dummies for qualitative data and normalize values"""
     data = deepcopy(data_input)
@@ -39,17 +40,14 @@ def adjust_students_data(data_input):
 
 def adjust_games_data(data_input):
     # Set parameters
-    min_year = 2006
     big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
                      'Take-Two Interactive', 'Sony Computer Entertainment',
                      'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
+    relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
     columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales',
-                      'Other_Sales', 'Global_Sales']
-
-    # Filter data
-    data = data_input.dropna()
-    data = data[data['Year'] >= min_year]
-    data = data.reset_index(drop=True)
+                      'Other_Sales', 'Global_Sales',
+                      'Publisher', 'Genre', 'Platform']
+    data = deepcopy(data_input)
 
     # Adjust Publisher column
     data.loc[~data["Publisher"].isin(big_publisher), "Publisher"] = "Other"
@@ -58,13 +56,14 @@ def adjust_games_data(data_input):
             lambda row: 1 if row['Publisher'] == publisher else 0, axis=1)
 
     # Adjust Platform Column
+    data.loc[~data["Platform"].isin(relevant_platforms), "Platform"] = "Other"
     platforms = set(data['Platform']) - {'3DS'}
     for platform in platforms:
         data[platform] = data.apply(
             lambda row: 1 if row['Platform'] == platform else 0, axis=1)
 
     # Adjust Platform Column
-    genres = set(data['Genre']) - {'Puzzle'}
+    genres = set(data['Genre']) - {'Platform'}
     for genre in genres:
         data[genre] = data.apply(
             lambda row: 1 if row['Genre'] == genre else 0, axis=1)
@@ -72,9 +71,39 @@ def adjust_games_data(data_input):
     return data[columns_to_use + big_publisher + list(genres) + list(platforms)]
 
 
-def read_data(path):
+def read_data(path, typ):
     """Read data from file path and drop na values"""
     data = pd.read_csv(path, na_values='no data')
+    # Filter data
     data = data.dropna()
+    if typ == 'games':
+        data = data[data['Year'] >= 2006]
     data = data.reset_index(drop=True)
+
+    return data
+
+
+def adjust_to_plot(data_input):
+    # Set parameters
+    big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
+                     'Take-Two Interactive', 'Sony Computer Entertainment',
+                     'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
+
+    # relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
+
+    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales',
+                      'Other_Sales',
+                      'Publisher', 'Genre', 'Platform']
+
+    data = deepcopy(data_input)
+
+    # Adjust Publisher column
+    data.loc[~data["Publisher"].isin(big_publisher), "Publisher"] = "Other"
+    # Adjust Platform Column
+    # data.loc[~data["Platform"].isin(relevant_platforms), "Platform"] = "Other"
+
+    data = data[columns_to_use]
+    data = data.melt(id_vars=['Publisher', 'Genre', 'Platform'],
+                     var_name='Region', value_name='Sales')
+
     return data
