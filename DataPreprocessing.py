@@ -39,13 +39,13 @@ def adjust_students_data(data_input):
 
 
 def adjust_games_data(data_input):
+    """Prepare games data for further analysis and clustering algorithm"""
     # Set parameters
     big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
                      'Take-Two Interactive', 'Sony Computer Entertainment',
                      'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
     relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
-    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales',
-                      'Other_Sales', 'Global_Sales',
+    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales',
                       'Publisher', 'Genre', 'Platform']
     data = deepcopy(data_input)
 
@@ -83,19 +83,23 @@ def read_data(path, typ):
     return data
 
 
+def read_excel(path):
+    """Read excel file with games data stats"""
+    data = pd.read_excel(path, index_col=[0, 1, 2], header=[0, 1])
+    return data
+
+
 def adjust_to_plot(data_input):
+    """Prepare games data for plots"""
+    data = deepcopy(data_input)
     # Set parameters
     big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
                      'Take-Two Interactive', 'Sony Computer Entertainment',
                      'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
-
     # relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
-
     columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales',
                       'Other_Sales',
                       'Publisher', 'Genre', 'Platform']
-
-    data = deepcopy(data_input)
 
     # Adjust Publisher column
     data.loc[~data["Publisher"].isin(big_publisher), "Publisher"] = "Other"

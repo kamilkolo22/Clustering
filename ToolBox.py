@@ -24,6 +24,7 @@ def largest_indices(ary, n):
 
 
 def connected_componentsBFS(graph):
+    """Find connected components in weighted graph"""
     def BFS(v):
         queue.append(v)
         while len(queue) > 0:

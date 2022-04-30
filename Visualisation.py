@@ -18,6 +18,7 @@ def plot_compare_clusters(df_clusters):
 
 
 def plot_games_sales(data_plot):
+    """Bar plots for sales and different Publisher, Platform and Genre"""
     plt.figure(figsize=(20, 6), dpi=100)
     sns.barplot(x='Publisher', y='Sales', estimator=np.sum,
                 data=data_plot, hue='Region')

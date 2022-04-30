@@ -4,38 +4,69 @@ from Visualisation import *
 import seaborn as sns
 
 
+def analyse_school_data():
+    """Prepare analysis of Students Performance data"""
+    data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv',
+                         'school')
+    # Prepare data to analysis
+    adjusted_data = adjust_students_data(data_raw)
+    # Find clusters
+    clusters = find_cluster(adjusted_data)
+    df_clusters = []
+    for cluster in clusters:
+        df_clusters.append(data_raw.iloc[list(cluster)])
+    df_clusters = arrange_clusters(df_clusters)
+    # Prepare plots for all clusters
+    plot_compare_clusters(df_clusters)
+    return
+
+
+def analyse_games_data(make_plot=True):
+    """Prepare analysis of Video Games Sales data"""
+    data_raw = read_data('input/VideoGamesSales.csv', 'games')
+    # adjusted_data = adjust_games_data(data_raw)
+
+    # Make bar plots for sales in different regions
+    if make_plot:
+        data_plot = adjust_to_plot(data_raw)
+        plot_games_sales(data_plot)
+
+    # Create table with sales statistics for different
+    # Platform, Genre and Publisher
+    data_stats = data_raw[['Platform', 'Genre', 'Publisher', 'NA_Sales',
+                           'EU_Sales', 'JP_Sales', 'Other_Sales']]
+    data_stats = data_stats.groupby(by=['Platform', 'Genre', 'Publisher'])
+    data_stats = data_stats.describe()
+    data_stats.to_excel('output/games_stats.xlsx')
+    return
+
+
+def predict_sales(platform, genre, publisher):
+    """Show stats of games sales for given Platform, Genre and Publisher"""
+    data_stats = read_excel('output/games_stats.xlsx')
+
+    idx = pd.IndexSlice
+    pred = data_stats.loc[(platform, genre, publisher),
+                          idx[:, ['count', 'mean', 'std']]]
+    pred_mean = pred.loc[(slice(None), 'mean')]
+    pred_std = pred.loc[(slice(None), 'mean')]
+    pred_count = pred.loc[('NA_Sales', 'count')]
+
+    print(f'Total sold games: {int(pred_count)}\n'
+          f'Region \t mean \t std')
+    for i, v in pred_mean.items():
+        print(f'{i[:-6]},  {round(v, 4)},  {round(pred_std.loc[i], 4)}')
+
+    return pred
+
+
 if __name__ == "__main__":
     pd.set_option('display.expand_frame_repr', False)
 
-    # data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv',
-    #                      'school')
-    # adjusted_data = adjust_students_data(data_raw)
-    # clusters = find_cluster(adjusted_data)
-    #
-    # dfClusters = []
-    # for cluster in clusters:
-    #     dfClusters.append(data_raw.iloc[list(cluster)])
-    #
-    # dfClusters = arrange_clusters(dfClusters)
-    #
-    # plot_compare_clusters(dfClusters)
+    # analyse_school_data()
 
-    data_raw = read_data('input/VideoGamesSales.csv', 'games')
-    # adjusted_data = adjust_games_data(data_raw)
-    # data_plot = adjust_to_plot(data_raw)
-    # plot_games_sales(data_plot)
-
-    print(data_raw)
-
-    data = data_raw[['Platform', 'Genre', 'Publisher', 'NA_Sales',
-                    'EU_Sales',  'JP_Sales', 'Other_Sales']]
-    data = data.groupby(by=['Platform', 'Genre', 'Publisher'])
-    sales_pred = data.describe()
-    print(sales_pred)
-
-    print(sales_pred.loc[('PC', 'Action', 'Electronic Arts'), :][(slice(None), 'mean')])
-
-    sales_pred.to_excel('output/games_stats.xlsx')
+    # analyse_games_data(make_plot=False)
+    predict_sales('PC', 'Action', 'Electronic Arts')
 
     # sns.catplot(x='Region', y='Sales', data=data_plot,
     #             kind='box', row='Genre',
