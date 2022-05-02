@@ -2,7 +2,7 @@ from DataPreprocessing import *
 from Hierarchy import *
 from Visualisation import *
 from ClusterQuality import *
-import seaborn as sns
+from Kmeans import *
 
 
 def analyse_school_data(plot=True):
@@ -28,23 +28,25 @@ def analyse_school_data(plot=True):
     return
 
 
-def analyse_games_data(make_plot=True):
+def analyse_games_data(make_plot=True, stats=True):
     """Prepare analysis of Video Games Sales data"""
     data_raw = read_data('input/VideoGamesSales.csv', 'games')
-    # adjusted_data = adjust_games_data(data_raw)
+    adjusted_data = adjust_games_data(data_raw)
+    print(find_cluster_kmean(adjusted_data))
 
     # Make bar plots for sales in different regions
     if make_plot:
         data_plot = adjust_to_plot(data_raw)
         plot_games_sales(data_plot)
 
-    # Create table with sales statistics for different
-    # Platform, Genre and Publisher
-    data_stats = data_raw[['Platform', 'Genre', 'Publisher', 'NA_Sales',
-                           'EU_Sales', 'JP_Sales', 'Other_Sales']]
-    data_stats = data_stats.groupby(by=['Platform', 'Genre', 'Publisher'])
-    data_stats = data_stats.describe()
-    data_stats.to_excel('output/games_stats.xlsx')
+    if stats:
+        # Create table with sales statistics for different
+        # Platform, Genre and Publisher
+        data_stats = data_raw[['Platform', 'Genre', 'Publisher', 'NA_Sales',
+                               'EU_Sales', 'JP_Sales', 'Other_Sales']]
+        data_stats = data_stats.groupby(by=['Platform', 'Genre', 'Publisher'])
+        data_stats = data_stats.describe()
+        data_stats.to_excel('output/games_stats.xlsx')
     return
 
 
@@ -72,5 +74,5 @@ if __name__ == "__main__":
 
     # analyse_school_data(plot=False)
 
-    analyse_games_data(make_plot=False)
+    analyse_games_data(make_plot=False, stats=False)
     # predict_sales('PC', 'Action', 'Electronic Arts')

@@ -44,9 +44,8 @@ def adjust_games_data(data_input):
     big_publisher = ['Nintendo', 'Microsoft Game Studios', 'Activision',
                      'Take-Two Interactive', 'Sony Computer Entertainment',
                      'Ubisoft', 'Bethesda Softworks', 'Electronic Arts']
-    relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
-    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales',
-                      'Publisher', 'Genre', 'Platform']
+    # relevant_platforms = ['PC', 'PS3', 'XOne', 'PSP', 'Wii', 'DS', 'X360']
+    columns_to_use = ['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales']
     data = deepcopy(data_input)
 
     # Adjust Publisher column
@@ -56,7 +55,7 @@ def adjust_games_data(data_input):
             lambda row: 1 if row['Publisher'] == publisher else 0, axis=1)
 
     # Adjust Platform Column
-    data.loc[~data["Platform"].isin(relevant_platforms), "Platform"] = "Other"
+    # data.loc[~data["Platform"].isin(relevant_platforms), "Platform"] = "Other"
     platforms = set(data['Platform']) - {'3DS'}
     for platform in platforms:
         data[platform] = data.apply(
