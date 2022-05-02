@@ -15,7 +15,7 @@ def arrange_clusters(df_clusters):
 def find_cluster(data):
     """Return clusters as a list of row indexes for each cluster. User has to
     set number of clusters manually"""
-    span_tree_matrix = linkage(data)
+    span_tree_matrix, dist_matrix = linkage(data)
     # Get longest edges in graph
     indexes = largest_indices(span_tree_matrix, 10)
 
@@ -30,7 +30,7 @@ def find_cluster(data):
                             span_tree_matrix)
     # Find connected components
     comp = connected_componentsBFS(graph)
-    return comp[1:]
+    return comp[1:], dist_matrix
 
 
 def linkage(data):
@@ -42,7 +42,7 @@ def linkage(data):
     # Minimal spanning tree from distance matrix by function from scipy package
     span_tree_matrix = minimum_spanning_tree(dist_matrix).toarray()
 
-    return span_tree_matrix
+    return span_tree_matrix, dist_matrix
 
 
 def get_dist_matrix(data, *args):

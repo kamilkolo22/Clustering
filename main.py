@@ -1,23 +1,30 @@
 from DataPreprocessing import *
 from Hierarchy import *
 from Visualisation import *
+from ClusterQuality import *
 import seaborn as sns
 
 
-def analyse_school_data():
+def analyse_school_data(plot=True):
     """Prepare analysis of Students Performance data"""
     data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv',
-                         'school')
+                         'school')[:100]
     # Prepare data to analysis
     adjusted_data = adjust_students_data(data_raw)
     # Find clusters
-    clusters = find_cluster(adjusted_data)
+    clusters, dist_matrix = find_cluster(adjusted_data)
     df_clusters = []
     for cluster in clusters:
         df_clusters.append(data_raw.iloc[list(cluster)])
     df_clusters = arrange_clusters(df_clusters)
     # Prepare plots for all clusters
-    plot_compare_clusters(df_clusters)
+    if plot:
+        plot_compare_clusters(df_clusters)
+
+    # Quality of clusters using GDI index
+    print(f'GDI value: {gdi(clusters, dist_matrix)}')
+    print(f'BHI value: {bhi(clusters, dist_matrix)}')
+
     return
 
 
@@ -63,15 +70,7 @@ def predict_sales(platform, genre, publisher):
 if __name__ == "__main__":
     pd.set_option('display.expand_frame_repr', False)
 
-    # analyse_school_data()
+    # analyse_school_data(plot=False)
 
-    # analyse_games_data(make_plot=False)
-    predict_sales('PC', 'Action', 'Electronic Arts')
-
-    # sns.catplot(x='Region', y='Sales', data=data_plot,
-    #             kind='box', row='Genre',
-    #             col='Publisher')
-    # plt.show()
-
-    # sns.heatmap(corrMatrix, annot=True)
-    # plt.show()
+    analyse_games_data(make_plot=False)
+    # predict_sales('PC', 'Action', 'Electronic Arts')
