@@ -22,8 +22,8 @@ def analyse_school_data(plot=True):
         plot_compare_clusters(df_clusters)
 
     # Quality of clusters using GDI index
-    print(f'GDI value: {gdi(clusters, dist_matrix)}')
-    print(f'BHI value: {bhi(clusters, dist_matrix)}')
+    # print(f'GDI value: {gdi(clusters, dist_matrix)}')
+    # print(f'BHI value: {bhi(clusters, dist_matrix)}')
 
     return df_clusters
 
@@ -72,7 +72,7 @@ def predict_sales(platform, genre, publisher):
 if __name__ == "__main__":
     pd.set_option('display.expand_frame_repr', False)
 
-    # analyse_school_data(plot=False)
+    analyse_school_data(plot=True)
 
-    analyse_games_data(make_plot=False, stats=False)
+    # analyse_games_data(make_plot=False, stats=False)
     # predict_sales('PC', 'Action', 'Electronic Arts')

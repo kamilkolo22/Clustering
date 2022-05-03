@@ -1,5 +1,6 @@
 import numpy as np
 from itertools import combinations, product
+from time import time
 
 
 def bhi(clusters, dist_matrix):
@@ -20,15 +21,16 @@ def bhi(clusters, dist_matrix):
             list2 = clusters[j]
             diff_cluster_index = diff_cluster_index.union(set(product(list1,
                                                                       list2)))
+
     # Calculate index value
-    s_plus = 0
-    s_minus = 0
-    for i, j in diff_cluster_index:
-        for p, q in same_cluster_index:
-            if dist_matrix[i][j] > dist_matrix[p][q]:
-                s_plus += 1
-            if dist_matrix[i][j] < dist_matrix[p][q]:
-                s_minus += 1
+    time_start = time()
+    dist_matrix = dist_matrix.tolist()
+    s = [1 if dist_matrix[i][j] > dist_matrix[p][q] else 0
+         for i, j in diff_cluster_index for p, q in same_cluster_index]
+    print(f'time calc: {time() - time_start}')
+    s_plus = sum(s)
+    s_minus = len(s) - s_plus
+
     return (s_plus - s_minus) / (s_plus + s_minus)
 
 

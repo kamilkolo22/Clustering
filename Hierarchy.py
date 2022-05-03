@@ -1,5 +1,7 @@
 from scipy.sparse.csgraph import minimum_spanning_tree
 from ToolBox import *
+from copy import deepcopy
+from ClusterQuality import gdi, bhi
 
 
 def arrange_clusters(df_clusters):
@@ -18,18 +20,29 @@ def find_cluster(data):
     span_tree_matrix, dist_matrix = linkage(data)
     # Get longest edges in graph
     indexes = largest_indices(span_tree_matrix, 10)
+    # Initialize variables
+    comp = None
+    response = 'no'
 
-    print(f'Longest distance between elements: {span_tree_matrix[indexes]}')
-    number = int(input('Chose number of clusters (int): '))
-    new = (indexes[0][:number-1], indexes[1][:number-1])
+    while response != 'yes':
+        print(f'Longest distance between elements: {span_tree_matrix[indexes]}')
+        number = int(input('Chose number of clusters (int): '))
+        new = (indexes[0][:number-1], indexes[1][:number-1])
 
-    # Delete longest edges by setting zeros in spanning tree matrix
-    span_tree_matrix[new] = 0
+        # Delete longest edges by setting zeros in spanning tree matrix
+        new_span_tree = deepcopy(span_tree_matrix)
+        new_span_tree[new] = 0
 
-    graph = matrix_to_graph(range(len(span_tree_matrix)),
-                            span_tree_matrix)
-    # Find connected components
-    comp = connected_componentsBFS(graph)
+        graph = matrix_to_graph(range(len(new_span_tree)),
+                                new_span_tree)
+        # Find connected components
+        comp = connected_componentsBFS(graph)
+
+        # Quality of clusters using GDI index
+        print(f'GDI value: {gdi(comp[1:], dist_matrix)}')
+        # print(f'BHI value: {bhi(comp[1:], dist_matrix)}')
+        response = input(f'End analysis?: ')
+
     return comp[1:], dist_matrix
 
 
