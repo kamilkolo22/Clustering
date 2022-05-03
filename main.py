@@ -8,7 +8,7 @@ from Kmeans import *
 def analyse_school_data(plot=True):
     """Prepare analysis of Students Performance data"""
     data_raw = read_data('input/StudentsPerformanceMuricanUniversity.csv',
-                         'school')[:100]
+                         'school')
     # Prepare data to analysis
     adjusted_data = adjust_students_data(data_raw)
     # Find clusters
@@ -25,14 +25,14 @@ def analyse_school_data(plot=True):
     print(f'GDI value: {gdi(clusters, dist_matrix)}')
     print(f'BHI value: {bhi(clusters, dist_matrix)}')
 
-    return
+    return df_clusters
 
 
 def analyse_games_data(make_plot=True, stats=True):
     """Prepare analysis of Video Games Sales data"""
     data_raw = read_data('input/VideoGamesSales.csv', 'games')
     adjusted_data = adjust_games_data(data_raw)
-    print(find_cluster_kmean(adjusted_data))
+    clustered_data = find_cluster_kmean(adjusted_data)
 
     # Make bar plots for sales in different regions
     if make_plot:
@@ -47,7 +47,7 @@ def analyse_games_data(make_plot=True, stats=True):
         data_stats = data_stats.groupby(by=['Platform', 'Genre', 'Publisher'])
         data_stats = data_stats.describe()
         data_stats.to_excel('output/games_stats.xlsx')
-    return
+    return clustered_data
 
 
 def predict_sales(platform, genre, publisher):
@@ -58,7 +58,7 @@ def predict_sales(platform, genre, publisher):
     pred = data_stats.loc[(platform, genre, publisher),
                           idx[:, ['count', 'mean', 'std']]]
     pred_mean = pred.loc[(slice(None), 'mean')]
-    pred_std = pred.loc[(slice(None), 'mean')]
+    pred_std = pred.loc[(slice(None), 'std')]
     pred_count = pred.loc[('NA_Sales', 'count')]
 
     print(f'Total sold games: {int(pred_count)}\n'

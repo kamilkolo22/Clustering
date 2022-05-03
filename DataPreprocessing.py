@@ -7,8 +7,8 @@ def adjust_students_data(data_input):
     data = deepcopy(data_input)
     columns_to_use = ['gender', 'group A', 'group B', 'group C', 'group D',
                       'degree', 'lunch', 'course', 'AvgScore']
-    degree_map = {"bachelor's degree": 3/5, 'some high school': 0,
-                  'some college': 2/5, "associate's degree": 4/5,
+    degree_map = {"bachelor's degree": 4/5, 'some high school': 0,
+                  'some college': 2/5, "associate's degree": 3/5,
                   'high school': 1/5, "master's degree": 1}
 
     data['gender'] = data['gender'].map({'female': 1, 'male': 0})
